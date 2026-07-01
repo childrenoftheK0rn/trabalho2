@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "arquivos.h"
-#include "utils.h"
+#include "../include/arquivos.h"
+#include "../include/utils.h"
 
 #define ARQ_SENSORES "sensores.bin"
 #define ARQ_SETORES  "setores.bin"
