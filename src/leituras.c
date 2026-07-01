@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "leituras.h"
-#include "utils.h"
+#include "../include/leituras.h"
+#include "../include/utils.h"
 
 
 leitura_t *registrar_leitura(leitura_t *lista,
