@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "setores.h"
-#include "utils.h"
+#include "../include/setores.h"
+#include "../include/utils.h"
 
 setor_t *novo_setor(setor_t *lista) {
     setor_t *novo = (setor_t *) malloc(sizeof(setor_t));
@@ -56,7 +56,7 @@ void relatorio_setores(setor_t *lista) {
     }
 }
 
-/* CONSULTA POR DESCRIÇÃO (iterativa) */
+
 void consultar_setor_por_descricao(setor_t *lista) {
     if (lista_setor_vazia(lista)) return;
 
@@ -113,7 +113,7 @@ void instalar_sensor_setor(sensor_t *lista_sen, setor_t *lista_set) {
         return;
     }
 
-    /* Verifica duplicata */
+   
     for (sensor_instalado_t *si = set->sensores; si != NULL; si = si->proximo) {
         if (strcmp(si->id, id_sensor) == 0) {
             printf("Sensor ja instalado neste setor!\n");

@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "sensores.h"
-#include "utils.h"
+#include "../include/sensores.h"
+#include "../include/utils.h"
 
 
 sensor_t *novo_sensor(sensor_t *lista) {

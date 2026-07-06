@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "menus.h"
-#include "sensores.h"
-#include "setores.h"
-#include "leituras.h"
-#include "arquivos.h"
-#include "utils.h"
+#include "../include/menus.h"
+#include "../include/sensores.h"
+#include "../include/setores.h"
+#include "../include/leituras.h"
+#include "../include/arquivos.h"
+#include "../include/utils.h"
 
 int menu_tipo_sensor(void) {
     int opc;
@@ -171,17 +171,17 @@ void menu_sensores(sensor_t **psen, setor_t **pset) {
 void menu_principal(sensor_t **psen, setor_t **pset, leitura_t **plei) {
     int opc;
     do {
-        printf("\n╔══════════════════════════╗\n");
-        printf("║     MENU PRINCIPAL       ║\n");
-        printf("╠══════════════════════════╣\n");
-        printf("║ 1. Menu Sensores         ║\n");
-        printf("║ 2. Menu Setores          ║\n");
-        printf("║ 3. Menu Leituras         ║\n");
-        printf("║ 4. Menu Relatorios       ║\n");
-        printf("║ 5. Menu Consultas        ║\n");
-        printf("║ 6. Menu Arquivos         ║\n");
-        printf("║ 0. Sair (salva e fecha)  ║\n");
-        printf("╚══════════════════════════╝\n");
+        printf("\n=========================\n");
+        printf("      MENU PRINCIPAL       \n");
+        printf("===========================\n");
+        printf("1. Menu Sensores         \n");
+        printf("2. Menu Setores          \n");
+        printf("3. Menu Leituras         \n");
+        printf("4. Menu Relatorios       \n");
+        printf("5. Menu Consultas        \n");
+        printf("6. Menu Arquivos         \n");
+        printf("0. Sair (salva e fecha)  \n");
+        printf("============================\n");
         printf(":::: ");
         scanf("%d", &opc);
         getchar();

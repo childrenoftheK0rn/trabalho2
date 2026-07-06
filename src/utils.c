@@ -4,7 +4,7 @@
 #include <string.h>
 #include <time.h>
 
-#include "utils.h"
+#include "../include/utils.h"
 
 const char *nome_tipo(int tipo) {
     switch (tipo) {
