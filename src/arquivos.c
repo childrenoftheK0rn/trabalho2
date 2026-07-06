@@ -187,43 +187,63 @@ void exportar_html(sensor_t  *lista_sen, setor_t   *lista_set, leitura_t *lista_
     FILE *fp = fopen(nome_arq, "w");
     if (!fp) { perror("Erro ao criar HTML"); return; }
 
-    fprintf(fp,
-        "<!DOCTYPE html><html lang=\"pt-BR\"><head>\n"
-        "<meta charset=\"UTF-8\">\n"
-        "<title>Relatorio do Sistema de Sensores</title>\n"
-        "<style>\n"
-        "  body{font-family:Arial,sans-serif;margin:20px}\n"
-        "  h2{color:#333}\n"
-        "  table{border-collapse:collapse;width:100%%;margin-bottom:30px}\n"
-        "  th{background:#4472C4;color:#fff;padding:8px}\n"
-        "  td{border:1px solid #ccc;padding:6px}\n"
-        "  tr:nth-child(even){background:#f2f2f2}\n"
-        "</style></head><body>\n");
+    fprintf(fp, "<html><body>\n");
 
-    fprintf(fp, "<h2>Sensores</h2>\n<table>\n"
-                "<tr><th>ID</th><th>Tipo</th><th>Min</th><th>Max</th></tr>\n");
-    for (sensor_t *p = lista_sen; p != NULL; p = p->proximo)
-        fprintf(fp, "<tr><td>%s</td><td>%s</td><td>%.2f</td><td>%.2f</td></tr>\n",
-                p->id, nome_tipo(p->tipo),
-                p->faixa_leitura_min, p->faixa_leitura_max);
+    fprintf(fp, "<h2>Sensores</h2>\n");
+    fprintf(fp, "<table>\n");
+    fprintf(fp, "<thead>\n");
+    fprintf(fp, "<tr><th>ID</th><th>Tipo</th><th>Min</th><th>Max</th></tr>\n");
+    fprintf(fp, "</thead>\n");
+    fprintf(fp, "<tbody>\n");
+    for (sensor_t *p = lista_sen; p != NULL; p = p->proximo) {
+        fprintf(fp, "<tr>\n");
+        fprintf(fp, "<td>%s</td>", p->id);
+        fprintf(fp, "<td>%s</td>", nome_tipo(p->tipo));
+        fprintf(fp, "<td>%.2f</td>", p->faixa_leitura_min);
+        fprintf(fp, "<td>%.2f</td>\n", p->faixa_leitura_max);
+        fprintf(fp, "</tr>\n");
+    }
+    fprintf(fp, "</tbody>\n");
     fprintf(fp, "</table>\n");
 
-    fprintf(fp, "<h2>Setores</h2>\n<table>\n"
-                "<tr><th>ID</th><th>Nome</th><th>Descricao</th><th>Sensores</th></tr>\n");
-    for (setor_t *p = lista_set; p != NULL; p = p->proximo)
-        fprintf(fp, "<tr><td>%s</td><td>%s</td><td>%s</td><td>%d</td></tr>\n",
-                p->id, p->nome_local, p->descricao, p->num_sensores);
+    fprintf(fp, "<h2>Setores</h2>\n");
+    fprintf(fp, "<table>\n");
+    fprintf(fp, "<thead>\n");
+    fprintf(fp, "<tr><th>ID</th><th>Nome</th><th>Descricao</th><th>Sensores</th></tr>\n");
+    fprintf(fp, "</thead>\n");
+    fprintf(fp, "<tbody>\n");
+    for (setor_t *p = lista_set; p != NULL; p = p->proximo) {
+        fprintf(fp, "<tr>\n");
+        fprintf(fp, "<td>%s</td>", p->id);
+        fprintf(fp, "<td>%s</td>", p->nome_local);
+        fprintf(fp, "<td>%s</td>", p->descricao);
+        fprintf(fp, "<td>%i</td>\n", p->num_sensores);
+        fprintf(fp, "</tr>\n");
+    }
+    fprintf(fp, "</tbody>\n");
     fprintf(fp, "</table>\n");
 
-    fprintf(fp, "<h2>Leituras</h2>\n<table>\n"
-                "<tr><th>Sensor</th><th>Setor</th><th>Data</th>"
+    fprintf(fp, "<h2>Leituras</h2>\n");
+    fprintf(fp, "<table>\n");
+    fprintf(fp, "<thead>\n");
+    fprintf(fp, "<tr><th>Sensor</th><th>Setor</th><th>Data</th>"
                 "<th>Horario</th><th>Valor</th><th>Leitura</th></tr>\n");
-    for (leitura_t *p = lista_lei; p != NULL; p = p->proximo)
-        fprintf(fp, "<tr><td>%s</td><td>%s</td><td>%s</td>"
-                    "<td>%s</td><td>%.2f</td><td>%d</td></tr>\n",
-                p->id, p->local_setor, p->data,
-                p->horario, p->valor, p->opc_leitura);
-    fprintf(fp, "</table>\n</body></html>\n");
+    fprintf(fp, "</thead>\n");
+    fprintf(fp, "<tbody>\n");
+    for (leitura_t *p = lista_lei; p != NULL; p = p->proximo) {
+        fprintf(fp, "<tr>\n");
+        fprintf(fp, "<td>%s</td>", p->id);
+        fprintf(fp, "<td>%s</td>", p->local_setor);
+        fprintf(fp, "<td>%s</td>", p->data);
+        fprintf(fp, "<td>%s</td>", p->horario);
+        fprintf(fp, "<td>%.2f</td>", p->valor);
+        fprintf(fp, "<td>%i</td>\n", p->opc_leitura);
+        fprintf(fp, "</tr>\n");
+    }
+    fprintf(fp, "</tbody>\n");
+    fprintf(fp, "</table>\n");
+
+    fprintf(fp, "</body></html>\n");
 
     fclose(fp);
     printf("HTML exportado: %s\n", nome_arq);
