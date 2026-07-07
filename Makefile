@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wextra -std=c11 -g
 SRCDIR = src
 INCDIR = include
 OBJDIR = obj
-TARGET = sensor_system
+TARGET = trabalho2
 
 SRCS = $(wildcard $(SRCDIR)/*.c)
 OBJS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRCS))
