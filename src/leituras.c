@@ -6,12 +6,27 @@
 #include "../include/utils.h"
 
 
-leitura_t *registrar_leitura(leitura_t *lista,
-                              sensor_t  *lista_sen,
-                              setor_t   *lista_set)
+leitura_t *registrar_leitura(leitura_t *lista, sensor_t  *lista_sen, setor_t *lista_set)
 {
-    if (lista_sensor_vazia(lista_sen)) return lista;
-    if (lista_setor_vazia(lista_set))  return lista;
+    /*registrar(ou criar) leitura
+    1⁰ verifica se o limite de leituras foi atingifo
+    e  se existe as listas de sensores e setores....
+
+    2⁰ alocação dinâmica com malloc de um novo ponteiro para estrutura
+    fo tipo 'leitura_t'. Se o ponteiro for nulo, o conteúdo 
+    da linha 33 até a 36 impede que com que a operação resulte em crash(quando
+    o programa tenta mexer em um local da memória que não pertence a ele)
+    
+    3⁰ Registro da leitura e verificação da existência de um sensor e setor
+    4⁰ Verifica se sensor está instalado no setor */
+    
+    //1⁰
+    if (lista_sensor_vazia(lista_sen)){
+         return lista;
+    }
+    if (lista_setor_vazia(lista_set)){
+         return lista;
+    }
 
  
     int total = 0;
@@ -21,12 +36,16 @@ leitura_t *registrar_leitura(leitura_t *lista,
         return lista;
     }
 
+    //2⁰
     leitura_t *nova = (leitura_t *) malloc(sizeof(leitura_t));
-    if (!nova) { perror("malloc"); return lista; }
-
+    if (!nova) { 
+        printf("erro!!"); 
+        return lista;
+     }
+    
+    //3⁰
     printf("\n=== REGISTRAR LEITURA ===\n");
 
-  
     printf("ID do sensor: ");
     fgets(nova->id, T_STR, stdin);
     retirar_enter(nova->id);
@@ -34,23 +53,36 @@ leitura_t *registrar_leitura(leitura_t *lista,
 
     sensor_t *sen = NULL;
     for (sensor_t *p = lista_sen; p != NULL; p = p->proximo) {
-        if (strcmp(p->id, nova->id) == 0) { sen = p; break; }
+        if (strcmp(p->id, nova->id) == 0) {
+             sen = p;
+              break;
+             }
     }
-    if (!sen) { printf("Sensor nao cadastrado!\n"); free(nova); return lista; }
-
+    if (!sen) { 
+        printf("Sensor nao cadastrado!\n");
+         free(nova); 
+         return lista; 
+        }
 
     printf("ID do setor: ");
-    fgets(nova->local_setor, TAM_VERIF, stdin);
+    fgets(nova->local_setor, TAM_VERIF, stdin); //tam_verif é 20 e está em utils.h
     retirar_enter(nova->local_setor);
     formatar_maiuscula(nova->local_setor);
 
     setor_t *set = NULL;
     for (setor_t *p = lista_set; p != NULL; p = p->proximo) {
-        if (strcmp(p->id, nova->local_setor) == 0) { set = p; break; }
+        if (strcmp(p->id, nova->local_setor) == 0) { 
+            set = p;
+             break;
+             }
     }
-    if (!set) { printf("Setor nao encontrado!\n"); free(nova); return lista; }
+    if (!set){
+         printf("Setor nao encontrado!\n"); 
+         free(nova); 
+         return lista; 
+        }
 
-    /* Verifica se sensor está instalado no setor */
+    //4⁰
     int instalado = 0;
     for (sensor_instalado_t *si = set->sensores; si != NULL; si = si->proximo) {
         if (strcmp(si->id, nova->id) == 0) { instalado = 1; break; }
@@ -93,6 +125,12 @@ leitura_t *registrar_leitura(leitura_t *lista,
 
 
 void exibir_leituras(leitura_t *lista) {
+    /*função de exibir as leituras:
+    1⁰ verifica se existe itens na lista
+    2⁰ exibe o histórico através de um for de listas encadeadas... 
+    */
+
+    //1⁰
     if (lista_leituras_vazia(lista)) return;
 
     printf("\n=== HISTORICO DE LEITURAS ===\n");
@@ -104,8 +142,21 @@ void exibir_leituras(leitura_t *lista) {
 }
 
 void relatorio_leituras(leitura_t *lista) {
-    if (lista_leituras_vazia(lista)) return;
+    /*Essa função de relatório de leituras, pode escolher se é por local
+    ou todos, que retorna a função acima
+    
+    1⁰ verifica a existência de leituras 
+    
+    2⁰ a seguir um algoritmo simples para escolher entre listar leituras
+    por local ou todos, isso é, se opc != 1, então é chamada a função acima
+    */
 
+    //1⁰
+    if (lista_leituras_vazia(lista)) {
+        return;
+    }
+    
+    //2⁰
     int opc;
     printf("1 - Por local  2 - Todos: ");
     scanf("%d", &opc);
@@ -128,15 +179,31 @@ void relatorio_leituras(leitura_t *lista) {
             }
         }
         if (!encontrou) printf("Nenhuma leitura para este local.\n");
-    } else {
+    } else { //else(opc != 1 -> 2);
         exibir_leituras(lista);
     }
 }
 
 void relatorio_variacao_leitura(leitura_t *lista) {
-    if (lista_leituras_vazia(lista)) return;
+    /*Relatório da variação de leitura de um sensor em um setor
+  1⁰ verifica se existe uma lista com leituras.
 
-    printf("\n=== RELATORIO DE VARIACAO ===\n");
+  2⁰ criação de variáveis de controle, seleção e uma string para ser o 'filtro'
+  de procura.
+
+  3⁰ algoritmo que, objetivamente, faz a variação de leitura,
+  para cada leitura tipo 1, procura uma tipo 2 do mesmo sensor e setor, então
+  se bater com o filtro (setor ou sensor), calcula a variação, com isso
+  exibe os dados das duas leituras e a variação encontrada, e 
+  se nenhum par for encontrado, exibe mensagem de erro.
+ 
+    */
+    if (lista_leituras_vazia(lista)) 
+    {
+        return;
+    }
+    //2⁰
+    printf("\n=== RELATORIO DE VARIAÇÃO ===\n");
 
     int opc;
     verificar filtro;
@@ -145,31 +212,47 @@ void relatorio_variacao_leitura(leitura_t *lista) {
     printf("1 - Por setor  2 - Por sensor: ");
     scanf("%d", &opc);
     getchar();
-
-    printf("%s: ", (opc == 1) ? "ID do setor" : "ID do sensor");
+    if (opc == 1) {
+        printf("ID do setor: ");
+    } else {
+        printf("ID do sensor: ");
+    }
     fgets(filtro, TAM_VERIF, stdin);
     retirar_enter(filtro);
     formatar_maiuscula(filtro);
-
-    for (leitura_t *a = lista; a != NULL; a = a->proximo) {
-        if (a->opc_leitura != 1) continue;
-
-        for (leitura_t *b = lista; b != NULL; b = b->proximo) {
-            if (b->opc_leitura != 2) continue;
-            if (strcmp(a->id,           b->id)           != 0) continue;
-            if (strcmp(a->local_setor,  b->local_setor)  != 0) continue;
-
-            int bate = (opc == 1 && strcmp(a->local_setor, filtro) == 0) ||
-                       (opc == 2 && strcmp(a->id,          filtro) == 0);
-            if (!bate) continue;
-
-            float variacao = b->valor - a->valor;
-            printf("\nSensor: %s | Local: %s\n", a->id, a->local_setor);
-            printf("1a leitura: %.2f (%s %s)\n", a->valor, a->data, a->horario);
-            printf("2a leitura: %.2f (%s %s)\n", b->valor, b->data, b->horario);
-            printf("Variacao: %+.2f\n", variacao);
-            encontrou = 1;
+    
+    //3⁰
+   for (leitura_t *a = lista; a != NULL; a = a->proximo) {
+    
+    if (a->opc_leitura == 1)
+     {
+     for (leitura_t *b = lista; b != NULL; b = b->proximo) {
+       if (b->opc_leitura == 2) {
+         if (strcmp(a->id, b->id) == 0 && 
+            strcmp(a->local_setor, b->local_setor) == 0) {
+             int bate = 0;
+             if (opc == 1 && strcmp(a->local_setor, filtro) == 0) {
+             bate = 1;
+            }
+            if (opc == 2 && strcmp(a->id, filtro) == 0) {
+                bate = 1;
+                        }
+                if (bate != 0) {
+                float variacao = b->valor - a->valor;
+                printf("\nSensor: %s | Local: %s\n", a->id, a->local_setor);
+                printf("1a leitura: %.2f (%s %s)\n", a->valor, a->data, a->horario);
+                printf("2a leitura: %.2f (%s %s)\n", b->valor, b->data, b->horario);
+                printf("Variação: %+.2f\n", variacao);
+                encontrou = 1;
+              }
+           }
         }
     }
-    if (!encontrou) printf("Nenhuma variacao encontrada.\n");
+   }
+ }
+    
+    if (encontrou == 0) {
+        printf("Nenhuma variação encontrada.\n");
+    }
 }
+
