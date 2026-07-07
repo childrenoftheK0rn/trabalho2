@@ -125,38 +125,38 @@ void carregar_binario(sensor_t **lista_sen, setor_t **lista_set) {
                 strcpy(si->tipo, sid.tipo);
                 strcpy(si->horario1, sid.horario1);
                 strcpy(si->horario2, sid.horario2);
-                si->leitura1            = sid.leitura1;
-                si->leitura2            = sid.leitura2;
-                si->leitura1_registrada = sid.leitura1_registrada;
-                si->leitura2_registrada = sid.leitura2_registrada;
-                si->proximo   = novo->sensores;
+                si->leitura1 = sid.leitura1;
+                si->leitura2= sid.leitura2;
+                si->leitura1_registrada =sid.leitura1_registrada;
+                si->leitura2_registrada= sid.leitura2_registrada;
+                si->proximo = novo->sensores;
                 novo->sensores = si;
             }
-
             novo->proximo = *lista_set;
-            *lista_set    = novo;
+            *lista_set= novo;
         }
         fclose(fp);
     }
 }
 
-void exportar_csv(sensor_t  *lista_sen, setor_t   *lista_set, leitura_t *lista_lei, const char *base)
+void exportar_csv(sensor_t *lista_sen, setor_t *lista_set, leitura_t *lista_lei, const char *base)
 {
-    char nome[T_STR];
+    string nome;
     FILE *fp;
-  
-    snprintf(nome, T_STR, "%s_sensores.csv", base);
+    strcpy(nome, base);
+    strcat(nome, "_sensores.csv");
     fp = fopen(nome, "w");
     if (fp) {
         fprintf(fp, "ID;Tipo;Min;Max\n");
         for (sensor_t *p = lista_sen; p != NULL; p = p->proximo)
-            fprintf(fp, "%s;%s;%.2f;%.2f\n",
-                    p->id, nome_tipo(p->tipo),
-                    p->faixa_leitura_min, p->faixa_leitura_max);
-        fclose(fp);
-        printf("Exportado: %s\n", nome);
+         fprintf(fp, "%s;%s;%.2f;%.2f\n", p->id, nome_tipo(p->tipo),
+         p->faixa_leitura_min, p->faixa_leitura_max);
+         fclose(fp);
+         printf("Exportado: %s\n", nome);
     }
-    snprintf(nome, T_STR, "%s_setores.csv", base);
+    
+    strcpy(nome, base);
+    strcat(nome, "_setores.csv");
     fp = fopen(nome, "w");
     if (fp) {
         fprintf(fp, "ID;Nome;Descricao;Num_sensores\n");
@@ -168,7 +168,9 @@ void exportar_csv(sensor_t  *lista_sen, setor_t   *lista_set, leitura_t *lista_l
         printf("Exportado: %s\n", nome);
     }
 
-    snprintf(nome, T_STR, "%s_leituras.csv", base);
+    
+    strcpy(nome, base);
+    strcat(nome, "_leituras.csv");
     fp = fopen(nome, "w");
     if (fp) {
         fprintf(fp, "ID_sensor;Setor;Data;Horario;Valor;Leitura\n");
@@ -181,6 +183,7 @@ void exportar_csv(sensor_t  *lista_sen, setor_t   *lista_set, leitura_t *lista_l
         printf("Exportado: %s\n", nome);
     }
 }
+
 
 void exportar_html(sensor_t  *lista_sen, setor_t   *lista_set, leitura_t *lista_lei, const char *nome_arq)
 {

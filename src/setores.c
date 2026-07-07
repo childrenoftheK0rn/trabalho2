@@ -6,14 +6,23 @@
 #include "../include/utils.h"
 
 setor_t *novo_setor(setor_t *lista) {
+    /*Criação (ou cadastro!) de novo setor...
+    1-alocação de 'novo'(dado do tipo setor_t).
+    2-laço de repetição utilizando do while(enquanto id_existir!)
+    com o objetivo de cadastrar esse novo setor:
+    id, local e descrição.
+    */
     setor_t *novo = (setor_t *) malloc(sizeof(setor_t));
-    if (!novo) { perror("malloc"); return lista; }
+    if (!novo) { 
+        printf("Erro!\n"); 
+        return lista;
+     }
 
     int id_existe;
     printf("\n=== NOVO SETOR ===\n");
 
     do {
-        printf("ID do setor (ex: AL09): ");
+        printf("ID do setor (ex: EX00): ");
         fgets(novo->id, T_STR, stdin);
         retirar_enter(novo->id);
         formatar_maiuscula(novo->id);
@@ -42,6 +51,10 @@ setor_t *novo_setor(setor_t *lista) {
 }
 
 void relatorio_setores(setor_t *lista) {
+    /*função de relatórios de setores
+    1 -  verificação de existência de setor (lista);
+    2 - percorrer os setores e printar seus dados.
+    */
     if (lista_setor_vazia(lista)) return;
 
     printf("\n=== RELATORIO DE SETORES ===\n");
@@ -58,7 +71,16 @@ void relatorio_setores(setor_t *lista) {
 
 
 void consultar_setor_por_descricao(setor_t *lista) {
-    if (lista_setor_vazia(lista)) return;
+    /*
+    consultar setor por descricao
+    1-> verificar a existência de setores
+    2-> com strstr, que por sua vez é uma função
+    da biblioteca 'string.h' que indentifica a string 
+    através da comparação com uma substring. 
+    */
+    if (lista_setor_vazia(lista)) {
+        return;
+    }
 
     string busca;
     printf("Digite parte da descricao: ");
@@ -74,13 +96,29 @@ void consultar_setor_por_descricao(setor_t *lista) {
             achou = 1;
         }
     }
-    if (!achou) printf("Nenhum setor encontrado.\n");
-}
+    if (!achou) {
+        printf("Nenhum setor encontrado.\n");
+    }
+    }
 
 
 void instalar_sensor_setor(sensor_t *lista_sen, setor_t *lista_set) {
-    if (lista_sensor_vazia(lista_sen)) return;
-    if (lista_setor_vazia(lista_set))  return;
+    /*instalar sensor em um setor
+    1-> verificação de existência de setor e sensor
+    2-> verificar se a quantidade de max_sens_por_setor foi atingida.
+    3-> verificar se sensor já foi instalado no setor...
+    4-> copia o conteúdo de novo para sen(inicialmente declarado como nulo).
+
+
+    */
+
+    
+    if (lista_sensor_vazia(lista_sen)){
+        return;
+    }
+    if (lista_setor_vazia(lista_set))  {
+        return;
+    }
 
     string id_sensor, id_setor;
 
@@ -93,9 +131,17 @@ void instalar_sensor_setor(sensor_t *lista_sen, setor_t *lista_set) {
 
     sensor_t *sen = NULL;
     for (sensor_t *p = lista_sen; p != NULL; p = p->proximo) {
-        if (strcmp(p->id, id_sensor) == 0) { sen = p; break; }
+        if (strcmp(p->id, id_sensor) == 0) 
+       {
+         sen = p;
+          break; 
+            }
     }
-    if (!sen) { printf("Sensor nao encontrado!\n"); return; }
+    if (!sen) { 
+        printf("Sensor nao encontrado!\n");
+         return;
+         }
+
 
     printf("ID do setor: ");
     fgets(id_setor, T_STR, stdin);
@@ -104,9 +150,15 @@ void instalar_sensor_setor(sensor_t *lista_sen, setor_t *lista_set) {
 
     setor_t *set = NULL;
     for (setor_t *p = lista_set; p != NULL; p = p->proximo) {
-        if (strcmp(p->id, id_setor) == 0) { set = p; break; }
+        if (strcmp(p->id, id_setor) == 0) { 
+            set = p;
+             break;
+             }
     }
-    if (!set) { printf("Setor nao encontrado!\n"); return; }
+    if (!set) {
+         printf("Setor nao encontrado!\n"); 
+         return;
+         }
 
     if (set->num_sensores >= MAX_SENS_POR_SETOR) {
         printf("Setor ja possui o maximo de %d sensores!\n", MAX_SENS_POR_SETOR);
@@ -122,9 +174,12 @@ void instalar_sensor_setor(sensor_t *lista_sen, setor_t *lista_set) {
     }
 
     sensor_instalado_t *novo = (sensor_instalado_t *) malloc(sizeof(sensor_instalado_t));
-    if (!novo) { perror("malloc"); return; }
+    if (!novo) {
+        printf("erro!\n"); 
+        return;
+     }
 
-    strcpy(novo->id,   sen->id);
+    strcpy(novo->id, sen->id);
     strcpy(novo->tipo, nome_tipo(sen->tipo));
     novo->leitura1_registrada = 0;
     novo->leitura2_registrada = 0;
@@ -136,8 +191,14 @@ void instalar_sensor_setor(sensor_t *lista_sen, setor_t *lista_set) {
 }
 
 void retirar_sensor_setor(setor_t *lista) {
-    if (lista_setor_vazia(lista)) return;
-
+    /*Função de retirar o sensor de um setor
+    1-> verificar a existência de ambos, sensor e setor...
+    2-> inserir o sensor a ser removido...
+    3-> lógica de busc + remoção com o while
+    */
+    if (lista_setor_vazia(lista)) {
+        return;
+    }
     string id_setor, id_sensor;
 
     printf("\n=== RETIRAR SENSOR DE SETOR ===\n");
@@ -173,7 +234,7 @@ void retirar_sensor_setor(setor_t *lista) {
     if (!cur) { printf("Sensor nao encontrado neste setor!\n"); return; }
 
     if (ant == NULL)
-        set->sensores = cur->proximo;  /* era o primeiro */
+        set->sensores = cur->proximo;  
     else
         ant->proximo = cur->proximo;
 

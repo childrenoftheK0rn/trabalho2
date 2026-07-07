@@ -6,21 +6,22 @@
 #include "arquivos.h"
 
 
-int main(void) {
-    sensor_t  *sensores = NULL;   /* lista de sensores cadastrados */
-    setor_t   *setores  = NULL;   /* lista de setores              */
-    leitura_t *leituras = NULL;   /* lista de leituras             */
+int main() {
+    /*Na main, três structs do tipo, respectivamente,
+     sensor_t, setor_t e leitura_t. Utilização de algumas funções de 
+     arquivos de 'utils.c',
+     
+     */
+    
+    sensor_t *sensores = NULL;  
+    setor_t *setores  = NULL;   
+    leitura_t *leituras = NULL;  
 
   
     carregar_binario(&sensores, &setores);
-
-    /* Loop principal */
     menu_principal(&sensores, &setores, &leituras);
-
-    /* Persiste ao sair */
+    
     salvar_binario(sensores, setores);
-
-    /* Libera memória  */
     while (sensores) {
         sensor_t *tmp = sensores->proximo;
         free(sensores);
